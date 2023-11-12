@@ -25,7 +25,9 @@ const Login = ({ navigation }) => {
   const switchRegister = () => {
     navigation.navigate('Register', {});
   }
-
+  const handleLogin = () => {
+    navigation.navigate('BottomTabNavigation', {})
+  }
   return (
     <Container>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -68,7 +70,7 @@ const Login = ({ navigation }) => {
                   </View>
                   <Text className='text-black/70'>Forgot Password ?</Text>
                 </View>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={handleLogin}>
                   <View className='h-[50px] bg-orangecustom rounded-lg flex items-center justify-center'>
                     <Text className='text-center text-base text-white font-semibold'>Login</Text>
                   </View>

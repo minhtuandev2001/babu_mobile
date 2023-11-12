@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Text, Dimensions, TouchableOpacity, Image, TextInput, ScrollView, Animated, Easing } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, Text, TextInput, ScrollView } from 'react-native';
 import Container from '../../components/layouts/Container';
+import { useState } from 'react';
 import { Icon } from '@rneui/themed';
 import CardPosts from '../../components/card/CardPosts';
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
-const Follow = () => {
+
+const Friends = () => {
   const [naviPage, setNaviPage] = useState(false)
   const [showNavibar, setShowNavibar] = useState(false)
   const [start, setStart] = useState(false)
@@ -29,7 +29,7 @@ const Follow = () => {
           />
         </View>
       </View>
-      <Animated.ScrollView
+      <ScrollView
         onScroll={handleScroll}
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
@@ -41,11 +41,11 @@ const Follow = () => {
           <CardPosts></CardPosts>
           <CardPosts></CardPosts>
         </View>
-      </Animated.ScrollView>
+      </ScrollView>
     </Container>
   );
 }
 
 const styles = StyleSheet.create({})
 
-export default Follow;
+export default Friends;

@@ -54,3 +54,9 @@ npm install react-native-pager-view
 
 npm install react-native-gesture-handler
 ```
+
+### icon
+
+```
+"@expo/vector-icons": "^12.0.0",
+```

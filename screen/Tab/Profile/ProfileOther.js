@@ -1,16 +1,16 @@
 import React from 'react';
 import { View, StyleSheet, Text, Image, Dimensions, Animated, TouchableOpacity, Easing, ScrollView, Modal, TextInput } from 'react-native';
-import Container from '../../components/layouts/Container';
+import Container from '../../../components/layouts/Container';
 import { Icon } from '@rneui/themed';
 import { Ionicons } from '@expo/vector-icons';
 import { useRef } from 'react';
 import { useState } from 'react';
-import ItemPostBasic from '../../components/Item/ItemPostBasic';
-import MenuModalProfile from '../../components/menu/MenuModalProfile';
-import CardPostsForProfile from '../../components/card/CardPostForProfile';
+import ItemPostBasic from '../../../components/Item/ItemPostBasic';
+import MenuModalProfile from '../../../components/menu/MenuModalProfile';
+import CardPostsForProfile from '../../../components/card/CardPostForProfile';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-const Profile = () => {
+const ProfileOther = () => {
   const widthValue = useRef(new Animated.Value(0)).current;
   const [showDetail, setShowDetail] = useState(false)
   const [showModalProfile, setShowModalProfile] = useState(false)
@@ -297,4 +297,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default Profile;
+export default ProfileOther;

@@ -7,6 +7,7 @@ module.exports = {
         graycustom: "#D9D9D9",
         orangecustom: "#FF6838",
         violetcustom: "#5B0888",
+        violetcustom2: "#DECEE7",
         darkbg: "#292841",
       },
     },
