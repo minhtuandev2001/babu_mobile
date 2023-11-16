@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, TextInput, Switch, TouchableOpacity, StyleSheet, ScrollView, TouchableWithoutFeedback, Keyboard, Dimensions, BackHandler } from 'react-native';
-import tw from 'twrnc'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Container from '../components/layouts/Container';
 // icon
 import iconMail from '../assets/icon/mail.png'
@@ -9,9 +9,18 @@ import eyeOff from '../assets/icon/eye-off.png'
 import back from '../assets/icon/back.png'
 import google from '../assets/icon/google.png'
 import facebook from '../assets/icon/facebook.png'
+import axios from 'axios';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
+const url = process.env.REACT_APP_URL
 const Login = ({ navigation }) => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState({
+    email: '',
+    password: '',
+  })
   useEffect(() => {
     const backAction = () => {
       return true
@@ -25,8 +34,51 @@ const Login = ({ navigation }) => {
   const switchRegister = () => {
     navigation.navigate('Register', {});
   }
-  const handleLogin = () => {
-    navigation.navigate('BottomTabNavigation', {})
+  const handleLogin = async () => {
+    setLoading(true)
+    let check = true;
+    if (email === '' || password === '') {
+      check = false
+      setError(error => ({
+        email: '',
+        password: '',
+      }))
+    }
+    if (email === '') {
+      setError(error => ({
+        ...error, email: '* This field cannot be left blank'
+      }))
+    }
+    if (password === '') {
+      setError(error => ({
+        ...error, password: '* This field cannot be left blank'
+      }))
+    }
+    if (!check) { // có trường rỗng
+      setLoading(false)
+      return
+    } else {
+      setError(error => ({
+        email: '',
+        password: '',
+      }))
+      try {
+        const config = {
+          headers: {
+            "Content-Type": "application/json",
+          }
+        }
+        const { data } = await axios.post(`${url}/api/user/login`,
+          { email, password }, config)
+        const jsonValue = JSON.stringify(data);
+        await AsyncStorage.setItem('userInfo', jsonValue);
+        setLoading(false)
+        navigation.navigate('BottomTabNavigation', {});
+      } catch (error) {
+        setLoading(false)
+        console.log(error.message)
+      }
+    }
   }
   return (
     <Container>
@@ -43,24 +95,27 @@ const Login = ({ navigation }) => {
                     className='w-6 h-6 mr-7'
                     source={iconMail}></Image>
                   <TextInput
+                    onChangeText={(t) => setEmail(t)}
                     className='flex-grow'
                     placeholderTextColor='#CFCFCF'
                     placeholder='enter your email'></TextInput>
                 </View>
-                <Text className='mb-4 text-xs text-red-500 italic mt-1'>error messages</Text>
+                <Text className='mb-4 text-xs text-red-500 italic mt-1'>{error.email}</Text>
                 <View className='bg-graycustom/30 flex flex-row py-3 w-full px-[18px]  mx-auto items-center rounded-lg overflow-hidden'>
                   <Image
                     className='w-6 h-6 mr-7'
                     source={lock}></Image>
                   <TextInput
+                    onChangeText={(t) => setPassword(t)}
+                    secureTextEntry={true}
                     className='flex-grow'
                     placeholderTextColor='#CFCFCF'
-                    placeholder='enter your email'></TextInput>
+                    placeholder='enter your password'></TextInput>
                   <Image
                     className='w-4 h-4'
                     source={eyeOff}></Image>
                 </View>
-                <Text className='mb-4 text-xs text-red-500 italic mt-1'>error messages</Text>
+                <Text className='mb-4 text-xs text-red-500 italic mt-1'>{error.password}</Text>
                 <View className='flex flex-row justify-between items-center mb-10'>
                   <View className='flex justify-center items-center gap-x-5 flex-row'>
                     <View className='w-[60px] h-7 bg-orangecustom rounded-full flex justify-center p-[2px]'>
@@ -72,7 +127,7 @@ const Login = ({ navigation }) => {
                 </View>
                 <TouchableOpacity onPress={handleLogin}>
                   <View className='h-[50px] bg-orangecustom rounded-lg flex items-center justify-center'>
-                    <Text className='text-center text-base text-white font-semibold'>Login</Text>
+                    <Text className='text-center text-base text-white font-semibold'>{loading ? 'loading...' : 'Login'}</Text>
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={switchRegister}>

@@ -6,7 +6,7 @@ import { View, StyleSheet, Text, Modal, TouchableOpacity, Dimensions, TextInput 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const MenuModalProfile = ({ showMenu }) => {
+const MenuModalProfile = ({ showMenu, handleFunction }) => {
   const [showModalPass, setShowModalPass] = useState(false)
   const HandleShowModalPass = () => {
     setShowModalPass(!showModalPass)
@@ -27,10 +27,10 @@ const MenuModalProfile = ({ showMenu }) => {
           <Text className='text-black/50'>Change password</Text>
         </View>
       </TouchableOpacity>
-      <View className='flex flex-row items-center gap-x-2'>
+      <TouchableOpacity onPress={handleFunction} className='flex flex-row items-center gap-x-2'>
         <Ionicons name='log-out-outline' size={22} color='#FF6838' />
         <Text className='text-black/50'>Logout</Text>
-      </View>
+      </TouchableOpacity>
       <Modal
         animationType="fade"
         transparent={true}

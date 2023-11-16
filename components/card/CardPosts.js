@@ -1,44 +1,112 @@
-import React from 'react';
-import { View, StyleSheet, Image, Text, Dimensions, TouchableOpacity, Modal, TextInput, ScrollView } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, Image, Text, Dimensions, TouchableOpacity, Modal, TextInput, ScrollView, Alert } from 'react-native';
 import { Icon } from '@rneui/themed';
 import Swiper from 'react-native-swiper';
 import { useState } from 'react';
 import MenuModalPosts from '../menu/MenuModalPosts';
 import Comment from '../comment/Comment';
+import { DataState } from '../../context/DataProvider';
+import axios from 'axios';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const data = [
-  {
-    id: 1,
-    image: 'https://images.unsplash.com/photo-1682687220777-2c60708d6889?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: 2,
-    image: 'https://plus.unsplash.com/premium_photo-1699384428169-2b8a11e2ed77?q=80&w=1519&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: 3,
-    image: 'https://plus.unsplash.com/premium_photo-1674420732043-d00b956e00b3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  },
-  {
-    id: 4,
-    image: 'https://images.unsplash.com/photo-1682688759350-050208b1211c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-  }
-]
-const CardPosts = () => {
+const url = process.env.REACT_APP_URL
+const CardPosts = ({ post, handleFunction }) => {
+  const { user } = DataState()
   const [showMenu, setShowMenu] = useState(false)
   const [showMenuPostDetail, setShowMenuPostDetail] = useState(false)
-  const [buttonHeart, setButtonHeart] = useState(false)
+  const [buttonHeart, setButtonHeart] = useState((post?.userLikes?.includes(user?._id)))
   const [modalPostDetail, setModalPostDetail] = useState(false)
-  const handleFavouritePosts = () => {
-    setButtonHeart(!buttonHeart)
+  const [comment, setComment] = useState('')
+  const [loadingComment, setLoadingComment] = useState(false)
+  const [loadingComment2, setLoadingComment2] = useState(false)
+  const [listComment, setListComment] = useState()
+  const [showModalUpdate, setShowModalUpdate] = useState(false)
+  const handleComment = async () => {
+    setLoadingComment(true)
+    if (comment === '') {
+      Alert.alert('Wring', 'You are leaving the content blank', [
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ]);
+      return
+    } else {
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${user?.token}`
+          }
+        }
+        console.log('chao')
+        const { data } = await axios.post(`${url}/api/comment/`,
+          { content: comment, postId: post._id }, config)
+        console.log(data)
+        Alert.alert('Success', '', [
+          { text: 'OK', onPress: () => console.log('OK Pressed') },
+        ]);
+        fetchComment()
+        setLoadingComment(false)
+      } catch (error) {
+        setLoadingComment(false)
+        console.log(error.message)
+      }
+    }
+  }
+  const handleFavouritePosts = async () => {
+    setButtonHeart(true)
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`
+        }
+      }
+      const { data } = await axios.put(`${url}/api/posts/heart`,
+        { userId: user._id, postId: post._id }, config)
+      handleFunction()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  const handlenotFavouritePosts = async () => {
+    setButtonHeart(false)
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`
+        }
+      }
+      const { data } = await axios.put(`${url}/api/posts/removeHeart`,
+        { userId: user._id, postId: post._id }, config)
+      handleFunction()
+    } catch (error) {
+      console.log(error)
+    }
   }
   const handlePostDetail = () => {
     setShowMenu(false)
     setShowMenuPostDetail(false)
     setModalPostDetail(!modalPostDetail)
   }
+  const fetchComment = async () => {
+    try {
+      setLoadingComment2(true)
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`
+        }
+      }
+      console.log('chaosdafshihashihfuhh')
+      const { data } = await axios.get(`${url}/api/comment/${post._id}`, config)
+      console.log(data)
+      setListComment(data)
+      setLoadingComment2(false)
+    } catch (error) {
+      setLoadingComment2(false)
+    }
+  }
+  useEffect(() => {
+    fetchComment()
+  }, [])
   return (
     <View
       style={[styles.shadowPropHome]}
@@ -47,15 +115,15 @@ const CardPosts = () => {
         <View className='flex flex-row gap-x-[10px] '>
           <Image
             className='w-10 h-10 rounded-full'
-            source={{ uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YXZhdGFyfGVufDB8fDB8fHww' }}></Image>
+            source={{ uri: post.poster.pic }}></Image>
           <View className=''>
-            <Text className='mr-1 text-base font-medium'>Estefania</Text>
-            <Text className="text-sm font-medium text-black/50">5 min ago</Text>
+            <Text className='mr-1 text-base font-medium'>{post.poster.name}</Text>
+            <Text className="text-sm font-medium text-black/50">{post.createdAt.split("T")[1].split(":")[0]}:{post.createdAt.split("T")[1].split(":")[1]}</Text>
           </View>
         </View>
         <TouchableOpacity onPress={() => setShowMenu(!showMenu)}>
           <View className='flex items-center justify-center rotate-90'>
-            <Icon name='kebab-horizontal' type='octicon' color='#FF6838' size={18} />
+            {post?.poster?._id == user?._id && <Icon name='kebab-horizontal' type='octicon' color='#FF6838' size={18} />}
           </View>
         </TouchableOpacity>
       </View>
@@ -63,37 +131,42 @@ const CardPosts = () => {
         <TouchableOpacity onPress={() => handlePostDetail()} activeOpacity={0.9}>
           <Text
             numberOfLines={2}
-            className='mb-4 text-sm text-black'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum molestiae nesciunt, unde repudiandae voluptate beatae laborum explicabo praesentium voluptatibus voluptas. Officiis adipisci ex cumque eligendi odit exercitationem recusandae, unde cum sed excepturi accusamus, impedit harum minima vitae, incidunt illo hic dolore? Veniam assumenda nulla quo deleniti aliquid? Id, cum neque?</Text>
+            className='mb-4 text-sm text-black'>{post.content}</Text>
         </TouchableOpacity>
-        <View
-          style={{ height: windowHeight / 4 }}
-          className='bg-red-400 rounded-[10px] overflow-hidden '>
-          <Swiper
-            dot={
-              <View style={{ backgroundColor: '#DCE0DB', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 10, marginBottom: -10, }} />
-            }
-            activeDot={
-              <View style={{ backgroundColor: '#FF6838', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 10, marginBottom: -10, }} />
-            }
-          >
-            {data.map((item, index) => <Image
-              className='object-cover object-center h-full'
-              key={index} source={{ uri: item.image }} />)}
-          </Swiper>
-        </View>
+        {post?.media?.length > 0 ?
+          <TouchableOpacity
+            onPress={() => handlePostDetail()}
+            style={{ height: windowHeight / 4 }}
+            className='bg-red-400 rounded-[10px] overflow-hidden '>
+            <Swiper
+              dot={
+                <View style={{ backgroundColor: '#DCE0DB', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 10, marginBottom: -10, }} />
+              }
+              activeDot={
+                <View style={{ backgroundColor: '#FF6838', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 10, marginBottom: -10, }} />
+              }
+            >
+
+              {post.media.map((item, index) => <Image
+                className='object-cover object-center h-full'
+                key={index} source={{ uri: item }} />)}
+            </Swiper>
+          </TouchableOpacity>
+          : null}
         <View className='flex flex-row justify-between mt-3'>
           <View className='flex flex-row  w-[50px] justify-between gap-x-4'>
-            <TouchableOpacity onPress={() => handleFavouritePosts()}>
-              {buttonHeart ?
+            {buttonHeart ?
+              <TouchableOpacity onPress={() => handlenotFavouritePosts()}>
                 <Icon name='heart-fill' type='octicon' color='#FF6464' size={20} />
-                : <Icon name='heart' type='octicon' color='#FF6838' size={20} />
-              }
-            </TouchableOpacity>
+              </TouchableOpacity>
+              : <TouchableOpacity onPress={() => handleFavouritePosts()}>
+                <Icon name='heart' type='octicon' color='#FF6464' size={20} />
+              </TouchableOpacity>}
             <TouchableOpacity onPress={handlePostDetail}>
               <Icon name='comment' type='octicon' color='#FF6838' size={20} />
             </TouchableOpacity>
           </View>
-          <Icon name='share-android' type='octicon' color='#FF6838' size={20} />
+          {/* <Icon name='share-android' type='octicon' color='#FF6838' size={20} /> */}
         </View>
       </View>
       {/* /////////////////////////////// MENU */}
@@ -127,10 +200,10 @@ const CardPosts = () => {
                 <View className='flex flex-row gap-x-[10px]'>
                   <Image
                     className='w-10 h-10 rounded-full'
-                    source={{ uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YXZhdGFyfGVufDB8fDB8fHww' }}></Image>
+                    source={{ uri: post.poster.pic }}></Image>
                   <View className=''>
-                    <Text className='mr-1 text-base font-medium'>Estefania</Text>
-                    <Text className="text-sm font-medium text-black/50">5 min ago</Text>
+                    <Text className='mr-1 text-base font-medium'>{post.poster.name}</Text>
+                    <Text className="text-sm font-medium text-black/50">{post.createdAt.split("T")[1].split(":")[0]}:{post.createdAt.split("T")[1].split(":")[1]}</Text>
                   </View>
                 </View>
                 <TouchableOpacity onPress={() => setShowMenuPostDetail(!showMenuPostDetail)}>
@@ -141,43 +214,48 @@ const CardPosts = () => {
               </View>
               <View className='pt-3 mb-3'>
                 <Text
-                  className='mb-4 text-sm text-black'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum molestiae nesciunt, unde repudiandae voluptate beatae laborum explicabo praesentium voluptatibus voluptas. Officiis adipisci ex cumque eligendi odit exercitationem recusandae, unde cum sed excepturi accusamus, impedit harum minima vitae, incidunt illo hic dolore? Veniam assumenda nulla quo deleniti aliquid? Id, cum neque?</Text>
-                <View
-                  style={{ height: windowHeight / 3.5 }}
-                  className='bg-red-400 rounded-[10px] overflow-hidden '>
-                  <Swiper
-                    dot={
-                      <View style={{ backgroundColor: '#DCE0DB', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 10, marginBottom: -10, }} />
-                    }
-                    activeDot={
-                      <View style={{ backgroundColor: '#FF6838', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 10, marginBottom: -10, }} />
-                    }
-                  >
-                    {data.map((item, index) => <Image
-                      className='object-cover object-center h-full'
-                      key={index} source={{ uri: item.image }} />)}
-                  </Swiper>
-                </View>
+                  className='mb-4 text-sm text-black'>{post.content}</Text>
+                {post?.media?.length > 0 ?
+                  <View
+                    style={{ height: windowHeight / 3.5 }}
+                    className='bg-red-400 rounded-[10px] overflow-hidden '>
+                    <Swiper
+                      dot={
+                        <View style={{ backgroundColor: '#DCE0DB', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 10, marginBottom: -10, }} />
+                      }
+                      activeDot={
+                        <View style={{ backgroundColor: '#FF6838', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 10, marginBottom: -10, }} />
+                      }
+                    >
+                      {post.media.map((item, index) => <Image
+                        className='object-cover object-center h-full'
+                        key={index} source={{ uri: item }} />)}
+                    </Swiper>
+                  </View>
+                  : null}
                 <View className='flex flex-row justify-between mt-3'>
                   <View className='flex flex-row  w-[50px] justify-between gap-x-4'>
                     <TouchableOpacity onPress={() => handleFavouritePosts()}>
                       {buttonHeart ?
-                        <Icon name='heart-fill' type='octicon' color='#FF6464' size={20} />
-                        : <Icon name='heart' type='octicon' color='#FF6838' size={20} />
-                      }
+                        <TouchableOpacity onPress={() => handlenotFavouritePosts()}>
+                          <Icon name='heart-fill' type='octicon' color='#FF6464' size={20} />
+                        </TouchableOpacity>
+                        : <TouchableOpacity onPress={() => handleFavouritePosts()}>
+                          <Icon name='heart' type='octicon' color='#FF6464' size={20} />
+                        </TouchableOpacity>}
                     </TouchableOpacity>
                     <TouchableOpacity>
                       <Icon name='comment' type='octicon' color='#FF6838' size={20} />
                     </TouchableOpacity>
                   </View>
-                  <Icon name='share-android' type='octicon' color='#FF6838' size={20} />
+                  {/* <Icon name='share-android' type='octicon' color='#FF6838' size={20} /> */}
                 </View>
               </View>
-              <Comment></Comment>
-              <Comment></Comment>
-              <Comment></Comment>
-              <Comment></Comment>
-              <Comment></Comment>
+              {loadingComment2 && <Text className='text-center'>Loading...</Text>}
+              {listComment?.length > 0 ?
+                listComment.map((item, index) => <Comment key={item._id} comment={item}></Comment>)
+                : null
+              }
               {/* /////////////////////////////// MENU */}
               <MenuModalPosts showMenu={showMenuPostDetail}></MenuModalPosts>
             </View>
@@ -186,12 +264,13 @@ const CardPosts = () => {
           <View className='absolute bottom-0 w-full bg-white p-[20px]'>
             <View className='flex flex-row w-full '>
               <TextInput
+                onChangeText={t => setComment(t)}
                 className='flex-grow pl-3 mr-3 rounded-lg bg-graycustom/30'
                 placeholderTextColor='#CFCFCF'
                 placeholder='comment...'></TextInput>
-              <TouchableOpacity activeOpacity={0.7}>
-                <View className='flex items-center justify-center w-8 h-8 rounded-full bg-orangecustom'>
-                  <Icon name='plus' type='octicon' color='white' size={20} />
+              <TouchableOpacity disabled={loadingComment} activeOpacity={0.7} onPress={handleComment}>
+                <View className='flex items-center justify-center w-14 h-8 rounded-full bg-orangecustom'>
+                  <Text className='text-white font-semibold text-base'>{loadingComment ? 'loading' : 'send'}</Text>
                 </View>
               </TouchableOpacity>
             </View>

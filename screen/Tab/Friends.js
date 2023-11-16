@@ -15,8 +15,8 @@ const Friends = () => {
 
   return (
     <Container>
-      <View className='px-[20px] mb-5'>
-        <View className='bg-graycustom/30 flex flex-row py-3 w-full px-[18px]  mx-auto items-center rounded-lg overflow-hidden '>
+      <View className='px-[20px] mb-5 mt-2'>
+        <View className='bg-graycustom/30 flex flex-row py-2 w-full px-[18px]  mx-auto items-center rounded-lg overflow-hidden '>
           <TextInput
             className='flex-grow'
             placeholderTextColor='#CFCFCF'
@@ -35,11 +35,11 @@ const Friends = () => {
         showsHorizontalScrollIndicator={false}
       >
         <View className='px-[20px]'>
+          {/* <CardPosts></CardPosts>
           <CardPosts></CardPosts>
           <CardPosts></CardPosts>
           <CardPosts></CardPosts>
-          <CardPosts></CardPosts>
-          <CardPosts></CardPosts>
+          <CardPosts></CardPosts> */}
         </View>
       </ScrollView>
     </Container>

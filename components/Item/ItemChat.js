@@ -3,26 +3,29 @@ import { Icon } from '@rneui/themed';
 import React, { useState } from 'react';
 import { View, StyleSheet, Image, Text, TouchableOpacity, Modal, TextInput } from 'react-native';
 
-const ItemChat = () => {
+const ItemChat = ({ user, search = false, handleFunction }) => {
   const [showChatBox, setShowChatBox] = useState(false)
   const HandleChatBox = () => {
     setShowChatBox(!showChatBox)
   }
+  console.log(user.pic)
   return (
-    <TouchableOpacity onPress={HandleChatBox}>
+    <TouchableOpacity onPress={handleFunction}>
       <View className='flex flex-row items-center gap-4 py-2'>
         <View className='relative'>
-          <View className='overflow-hidden rounded-full w-11 h-11'>
-            <Image className='w-full h-full' source={{ uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YXZhdGFyfGVufDB8fDB8fHww' }}></Image>
+          <View className='overflow-hidden rounded-full w-14 h-14'>
+            <Image className='w-full h-full' source={{ uri: user.pic }}></Image>
           </View>
-          <View className=' absolute top-0 -left-[2px] z-20 w-4 h-4 bg-green-500 rounded-full border-[2px] border-white'></View>
+          {!search &&
+            <View className=' absolute top-0 -left-[2px] z-20 w-4 h-4 bg-green-500 rounded-full border-[2px] border-white'></View>}
         </View>
-        <View className='flex-grow'>
-          <View className='flex flex-row items-center justify-between'>
-            <Text className='flex-grow text-base font-medium'>Lisa</Text>
-            <Text className='text-sm font-medium text-black/50'>23 mins</Text>
+        <View className='flex-grow gap-y-1 mb-1'>
+          <View className='flex flex-row items-center justify-between '>
+            <Text className='flex-grow text-lg font-medium'>{user.name}</Text>
+            {!search &&
+              <Text className='text-sm font-medium text-black/50'>23 mins</Text>}
           </View>
-          <Text className='font-medium text-black/50'>chao ban</Text>
+          <Text className='font-medium text-black/50'>{search ? user.email : 'chao ban'}</Text>
         </View>
       </View>
       <Modal
@@ -51,7 +54,7 @@ const ItemChat = () => {
               <Text className='text-base font-medium'>Joaquin</Text>
             </View>
           </View>
-          {/* // content modal posts detail   */}
+          {/* // content modal  */}
 
           <View className='absolute bottom-0 w-full bg-white p-[20px]'>
             <View className='flex flex-row w-full items-center'>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, Image, ScrollView, Dimensions, Modal, TouchableOpacity, TextInput } from 'react-native';
+import { View, StyleSheet, Text, Image, ScrollView, Dimensions, Modal, TouchableOpacity, TextInput, Alert, Keyboard } from 'react-native';
 import Container from '../../components/layouts/Container';
 // icon
 import bellIcon from "../../assets/icon/bell.png"
@@ -14,17 +14,95 @@ import CardPosts from '../../components/card/CardPosts';
 import { useState } from 'react';
 import ItemNotification from '../../components/Item/ItemNotification';
 import ItemImage from '../../components/Item/ItemImage';
+import { DataState } from '../../context/DataProvider';
+import { useEffect } from 'react';
+import axios from 'axios';
+import { handleUpload2, openImagePickerAsync } from '../../config/Upload';
+import { TouchableWithoutFeedback } from 'react-native';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-const Home = () => {
+
+const url = process.env.REACT_APP_URL
+const Home = ({ navigation }) => {
+  const { user } = DataState()
   const [showModalNotif, setShowModalNotif] = useState(false)
   const [showModalPosting, setShowModalPosting] = useState(false)
+
+  const [posts, setPosts] = useState([])
+  const [fetchAgain, setFetchAgain] = useState(false)
+
+  const [content, setContent] = useState('')
+  const [listImage, setListImage] = useState([])
+  const [chooseImage, setChooseImage] = useState()
+  const [loadingCreate, setLoaingCreate] = useState(false)
+  const handleChoseImage = async () => {
+    setLoaingCreate(true)
+    let image = await openImagePickerAsync()
+    console.log(image)
+    handleUpload2(image, listImage, setListImage, setLoaingCreate)
+  }
+  const clearImage = (url) => {
+    setListImage(listImage.filter(image => image !== url))
+  }
+  const handleCreatePosts = async () => {
+    setLoaingCreate(true)
+    if (content === '') {
+      Alert.alert('Wring', 'You are leaving the content blank', [
+        { text: 'OK', onPress: () => console.log('OK Pressed') },
+      ]);
+      setLoaingCreate(false)
+      return
+    } else {
+      try {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${user.token}`
+          }
+        }
+        console.log('chao')
+        const { data } = await axios.post(`${url}/api/posts/`,
+          { content, images: listImage }, config)
+        handleFetchAgaim()
+        Alert.alert('Success', '', [
+          { text: 'OK', onPress: () => console.log('OK Pressed') },
+        ]);
+        setLoaingCreate(false)
+      } catch (error) {
+        setLoaingCreate(false)
+        console.log(error.message)
+      }
+    }
+  }
+
+  const handleFetchAgaim = () => {
+    setFetchAgain(!fetchAgain)
+  }
   const handleModalNotif = () => {
     setShowModalNotif(!showModalNotif)
   }
   const handleModalPosting = () => {
     setShowModalPosting(!showModalPosting)
   }
+  const backPageLogin = () => {
+    navigation.goBack()
+  }
+  const fetchPosts = async () => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        }
+      }
+      const { data } = await axios.get(`${url}/api/posts/`, config);
+      console.log(data)
+      setPosts(data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchAgain])
   return (
     <Container>
       <ScrollView
@@ -34,13 +112,14 @@ const Home = () => {
         <View className='w-full h-full bg-white'>
           <View className='flex flex-row justify-between items-center mb-[30px] px-[20px]'>
             <Text className='text-2xl font-bold text-orangecustom'>Babu Network</Text>
-            <TouchableOpacity onPress={handleModalNotif}>
+            {/* <TouchableOpacity onPress={handleModalNotif}> */}
+            {/* <TouchableOpacity onPress={backPageLogin}>
               <View>
                 <Image
                   className=''
                   source={bellIcon}></Image>
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
           <View style={{ flex: 1 }}>
             <ScrollView
@@ -61,7 +140,7 @@ const Home = () => {
                     source={imageNewsFeed}></Image>
                 </View>
               </TouchableOpacity>
-              {[1, 2, 3, 4, 5, 6, 0, 7, 8, 'a', 'wr', 'v', 'c', 'x', 'z', ' l'].map(item => <CardNewsFeed key={item}></CardNewsFeed>)}
+              {posts.length > 0 && posts.map(item => item?.media?.length > 0 ? <CardNewsFeed key={item._id} post={item}></CardNewsFeed> : null)}
             </ScrollView>
             <View className='p-[20px]'>
               <TouchableOpacity onPress={handleModalPosting} activeOpacity={1}>
@@ -71,9 +150,9 @@ const Home = () => {
                   <View className='flex flex-row gap-x-[10px]'>
                     <Image
                       className='w-10 h-10 rounded-full'
-                      source={{ uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YXZhdGFyfGVufDB8fDB8fHww' }}></Image>
+                      source={{ uri: user?.pic }}></Image>
                     <View className='flex flex-row items-start'>
-                      <Text className='mr-1 text-base font-medium'>Estefania</Text>
+                      <Text className='mr-1 text-base font-medium'>{user?.name}</Text>
                     </View>
                   </View>
                   <View className='pt-8 pl-12'>
@@ -81,10 +160,7 @@ const Home = () => {
                   </View>
                 </View>
               </TouchableOpacity>
-              <CardPosts></CardPosts>
-              <CardPosts></CardPosts>
-              <CardPosts></CardPosts>
-              <CardPosts></CardPosts>
+              {posts.length > 0 && posts.map(post => <CardPosts key={post._id} post={post} handleFunction={handleFetchAgaim}></CardPosts>)}
             </View>
           </View>
         </View>
@@ -163,37 +239,32 @@ const Home = () => {
               </TouchableOpacity>
               <Text className='text-base font-medium text-orangecustom'>Create new posts</Text>
             </View>
-            <TouchableOpacity activeOpacity={0.7}>
-              <Text className=' px-4 py-[2px] font-medium text-white rounded-md bg-orangecustom'>Post</Text>
-            </TouchableOpacity>
+            <Text onPress={handleCreatePosts} disabled={loadingCreate} className=' px-5 py-[4px] font-medium text-white rounded-md bg-orangecustom'>Post</Text>
           </View>
           {/* // content modal notification */}
           <ScrollView>
             <View className='px-[20px] flex flex-row flex-wrap w-full'>
+              {loadingCreate && <Text className='text-center'>Loading...</Text>}
               <View className='w-full min-h-[100px] mt-5'>
                 <TextInput
-                  className='w-full'
+                  onChangeText={(t) => setContent(t)}
+                  className='w-full min-h-[80px]'
                   textAlignVertical='top'
                   multiline={true}
                   placeholder='write what you think...'
                 />
               </View>
               <View className='flex flex-row flex-wrap justify-between w-full'>
-                <ItemImage></ItemImage>
-                <ItemImage></ItemImage>
-                <ItemImage></ItemImage>
-                <ItemImage></ItemImage>
-                <ItemImage></ItemImage>
-                <ItemImage></ItemImage>
-                <ItemImage></ItemImage>
-                <ItemImage></ItemImage>
-                <ItemImage></ItemImage>
-                <ItemImage></ItemImage>
-                <ItemImage></ItemImage>
+                {listImage.length > 0 ? listImage.map((item, index) => <ItemImage key={index} url={item} handleFunction={clearImage}></ItemImage>)
+                  : null
+                }
               </View>
             </View>
           </ScrollView>
-          <TouchableOpacity activeOpacity={0.7} className='absolute right-2 bottom-5'>
+          <TouchableOpacity
+            onPress={handleChoseImage}
+            disabled={loadingCreate}
+            activeOpacity={0.7} className='absolute right-2 bottom-5'>
             <View className='flex items-center justify-center rounded-full w-11 h-11 bg-orangecustom'>
               <Icon name='plus' type='octicon' color='white' size={24} />
             </View>

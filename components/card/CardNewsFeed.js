@@ -3,19 +3,19 @@ import { View, StyleSheet, Image, Text } from 'react-native';
 // image 
 import avatarSmall from "../../assets/image/avatarSmall.png"
 import testImage from "../../assets/image/test.jpg"
-const CardNewsFeed = () => {
+const CardNewsFeed = ({ post }) => {
   return (
     <View
       style={styles.shadowPropHome}
       className='w-[120px] h-[160px] rounded-[10px] bg-white relative  m-2 ml-0'>
       <Image
         className='object-cover w-full h-full rounded-lg'
-        source={testImage}></Image>
+        source={{ uri: post.media?.[0] }}></Image>
       <View className='absolute flex flex-row items-center bottom-2 left-2 gap-x-1'>
         <Image
           className='rounded-full w-[26px] h-[26px]'
-          source={avatarSmall}></Image>
-        <Text className='text-sm font-medium text-white'>Ansley</Text>
+          source={{ uri: post.poster.pic }}></Image>
+        <Text className='text-sm font-medium text-white'>{post.poster.name}</Text>
       </View>
     </View>
   );

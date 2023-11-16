@@ -11,6 +11,7 @@ import follow from "./Tab/Follow"
 import chat from "./Tab/Chat"
 import profile from "./Tab/Profile"
 import friends from "./Tab/Friends"
+import DataProvider from '../context/DataProvider';
 const HomeStack = createNativeStackNavigator();
 function HomeStackScreen({ route }) {
   return (
@@ -54,45 +55,50 @@ function ProfileStackScreen({ route }) {
 const BottomTabNavigation = ({ route, navigation }) => {
   const Tab = createBottomTabNavigator();
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        headerShown: false,
-        tabBarStyle: {
-          height: 54,
-          display: true ? null : "none",
-          // display: null
-        },
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconname;
-          if (route.name === 'Home') {
-            iconname = focused ? 'ios-home' : 'ios-home-outline';
-          } else if (route.name === 'Follow') {
-            iconname = focused ? 'heart' : 'heart-outline';
-          } else if (route.name === 'Friends') {
-            iconname = focused ? 'people-sharp' : 'people-outline';
-          } else if (route.name === 'Chat') {
-            iconname = focused ? 'ios-chatbubbles' : 'ios-chatbubbles-outline';
-          } else if (route.name === 'Profile') {
-            iconname = focused ? 'people' : 'people-outline';
-          }
-          return <Ionicons name={iconname} size={24} color='#FF6838' />;
-        },
-        tabBarShowLabel: false,
-        tabBarActiveTintColor: '#FF8400',
-        tabBarInactiveTintColor: '#120f54',
-        //   tabBarLabelStyle: {
-        //     fontSize: 14,
-        //     fontWeight: "500"
-        //   },
-        tabBarHideOnKeyboard: true,
-      })}
-    >
-      <Tab.Screen name="Home" component={HomeStackScreen} />
-      <Tab.Screen name="Follow" component={FollowStackScreen} />
-      <Tab.Screen name="Friends" component={FriendsStackScreen} />
-      <Tab.Screen name="Chat" component={ChatStackScreen} />
-      <Tab.Screen name="Profile" component={ProfileStackScreen} />
-    </Tab.Navigator>
+    <DataProvider>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          headerShown: false,
+          tabBarStyle: {
+            height: 54,
+            display: true ? null : "none",
+            // display: null
+          },
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconname;
+            if (route.name === 'Home') {
+              iconname = focused ? 'ios-home' : 'ios-home-outline';
+            }
+            // else if (route.name === 'Follow') {
+            //   iconname = focused ? 'heart' : 'heart-outline';
+            // }
+            // else if (route.name === 'Friends') {
+            //   iconname = focused ? 'people-sharp' : 'people-outline';
+            // }
+            else if (route.name === 'Chat') {
+              iconname = focused ? 'ios-chatbubbles' : 'ios-chatbubbles-outline';
+            } else if (route.name === 'Profile') {
+              iconname = focused ? 'people' : 'people-outline';
+            }
+            return <Ionicons name={iconname} size={24} color='#FF6838' />;
+          },
+          tabBarShowLabel: false,
+          tabBarActiveTintColor: '#FF8400',
+          tabBarInactiveTintColor: '#120f54',
+          //   tabBarLabelStyle: {
+          //     fontSize: 14,
+          //     fontWeight: "500"
+          //   },
+          tabBarHideOnKeyboard: true,
+        })}
+      >
+        <Tab.Screen name="Home" component={HomeStackScreen} />
+        {/* <Tab.Screen name="Follow" component={FollowStackScreen} /> */}
+        {/* <Tab.Screen name="Friends" component={FriendsStackScreen} /> */}
+        <Tab.Screen name="Chat" component={ChatStackScreen} />
+        <Tab.Screen name="Profile" component={ProfileStackScreen} />
+      </Tab.Navigator>
+    </DataProvider>
   );
 }
 

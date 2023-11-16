@@ -26,7 +26,7 @@ const data = [
   }
 ]
 
-const ItemPostBasic = () => {
+const ItemPostBasic = ({ post }) => {
   const [showModalDetail, setShowModalDetail] = useState(false)
   const [buttonHeart, setButtonHeart] = useState(false)
   const [showMenuPostDetail, setShowMenuPostDetail] = useState(false)
@@ -41,9 +41,9 @@ const ItemPostBasic = () => {
       className='mb-2 overflow-hidden rounded-lg relative'
       style={{ width: windowWidth / 2 - 30, height: 150 }}>
       <Image className='w-full h-full'
-        source={{ uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YXZhdGFyfGVufDB8fDB8fHww' }}></Image>
+        source={{ uri: post?.media[0] }}></Image>
       <View className='absolute bg-black/20 w-full h-full'></View>
-      <Text className='absolute bottom-1 left-1 text-white text-base font-medium'>6-11-2023</Text>
+      <Text className='absolute bottom-1 left-1 text-white text-base font-medium'>{post.createdAt.split("T")[0]}</Text>
       {/* // menu posts */}
       <Modal
         animationType="slide"

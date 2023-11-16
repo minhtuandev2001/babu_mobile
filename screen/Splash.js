@@ -15,7 +15,7 @@ const Splash = ({ navigation }) => {
     <Container>
       <View className='flex justify-center items-center h-full'>
         <View>
-          <Text className='text-3xl font-bold text-orangecustom shadow-md mb-10' style={styles.shadowText}>BABU NETWORK</Text>
+          <Text className='text-3xl font-bold text-orangecustom shadow-md mb-10'>BABU NETWORK</Text>
           <ActivityIndicator size='large' color='#FF6838'></ActivityIndicator>
         </View>
       </View>
