@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TextInput, Switch, TouchableOpacity, StyleSheet, ScrollView, TouchableWithoutFeedback, Keyboard, Dimensions, BackHandler } from 'react-native';
+import { View, Text, Image, TextInput, Switch, TouchableOpacity, StyleSheet, ScrollView, TouchableWithoutFeedback, Keyboard, Dimensions, BackHandler, Alert } from 'react-native';
+import { useNavigation } from "@react-navigation/native"
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Container from '../components/layouts/Container';
 // icon
 import iconMail from '../assets/icon/mail.png'
 import lock from '../assets/icon/lock.png'
 import eyeOff from '../assets/icon/eye-off.png'
+import eyeOn from '../assets/icon/eye-on.png'
 import back from '../assets/icon/back.png'
 import google from '../assets/icon/google.png'
 import facebook from '../assets/icon/facebook.png'
 import axios from 'axios';
+import { URL } from '../config/enviroment';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-const url = process.env.REACT_APP_URL
-const Login = ({ navigation }) => {
+const url = URL
+const Login = () => {
+  const navigation = useNavigation()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -21,6 +26,7 @@ const Login = ({ navigation }) => {
     email: '',
     password: '',
   })
+  const [security, setSecurity] = useState(true)
   useEffect(() => {
     const backAction = () => {
       return true
@@ -76,6 +82,12 @@ const Login = ({ navigation }) => {
         navigation.navigate('BottomTabNavigation', {});
       } catch (error) {
         setLoading(false)
+        // Alert.alert("Error", error.message, [
+        //   { text: "OK" }
+        // ])
+        Alert.alert("Warning", "account or password is incorrect", [
+          { text: "Cancel" }
+        ])
         console.log(error.message)
       }
     }
@@ -83,7 +95,7 @@ const Login = ({ navigation }) => {
   return (
     <Container>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView className=' transition-all'
+        <ScrollView className='transition-all '
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}>
           <View className='flex justify-between' style={{ height: windowHeight }}>
@@ -100,24 +112,30 @@ const Login = ({ navigation }) => {
                     placeholderTextColor='#CFCFCF'
                     placeholder='enter your email'></TextInput>
                 </View>
-                <Text className='mb-4 text-xs text-red-500 italic mt-1'>{error.email}</Text>
+                <Text className='mt-1 mb-4 text-xs italic text-red-500'>{error.email}</Text>
                 <View className='bg-graycustom/30 flex flex-row py-3 w-full px-[18px]  mx-auto items-center rounded-lg overflow-hidden'>
                   <Image
                     className='w-6 h-6 mr-7'
                     source={lock}></Image>
                   <TextInput
                     onChangeText={(t) => setPassword(t)}
-                    secureTextEntry={true}
+                    secureTextEntry={security}
                     className='flex-grow'
                     placeholderTextColor='#CFCFCF'
                     placeholder='enter your password'></TextInput>
-                  <Image
-                    className='w-4 h-4'
-                    source={eyeOff}></Image>
+                  <TouchableOpacity onPress={() => setSecurity(!security)}>
+                    {security
+                      ? <Image
+                        className='w-[15px] h-[13px]'
+                        source={eyeOn}></Image>
+                      : <Image
+                        className='w-4 h-4'
+                        source={eyeOff}></Image>}
+                  </TouchableOpacity>
                 </View>
-                <Text className='mb-4 text-xs text-red-500 italic mt-1'>{error.password}</Text>
-                <View className='flex flex-row justify-between items-center mb-10'>
-                  <View className='flex justify-center items-center gap-x-5 flex-row'>
+                <Text className='mt-1 mb-4 text-xs italic text-red-500'>{error.password}</Text>
+                <View className='flex flex-row items-center justify-between mb-10'>
+                  <View className='flex flex-row items-center justify-center gap-x-5'>
                     <View className='w-[60px] h-7 bg-orangecustom rounded-full flex justify-center p-[2px]'>
                       <View className='bg-white rounded-full w-[25px] h-[25px]'></View>
                     </View>
@@ -127,13 +145,13 @@ const Login = ({ navigation }) => {
                 </View>
                 <TouchableOpacity onPress={handleLogin}>
                   <View className='h-[50px] bg-orangecustom rounded-lg flex items-center justify-center'>
-                    <Text className='text-center text-base text-white font-semibold'>{loading ? 'loading...' : 'Login'}</Text>
+                    <Text className='text-base font-semibold text-center text-white'>{loading ? 'loading...' : 'Login'}</Text>
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={switchRegister}>
-                  <View className='flex flex-row gap-x-4 mx-auto mt-4'>
-                    <Text className='text-sm text-black/50 font-semibold'>Create New Account?</Text>
-                    <Text className='text-violetcustom font-semibold'>Sign up</Text>
+                  <View className='flex flex-row items-center justify-center w-full mx-auto mt-4 gap-x-4'>
+                    <Text className='text-sm font-semibold text-black/50'>Create New Account?</Text>
+                    <Text className='font-semibold text-violetcustom'>Sign up</Text>
                   </View>
                 </TouchableOpacity>
               </View>

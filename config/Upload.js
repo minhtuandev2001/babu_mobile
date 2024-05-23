@@ -28,7 +28,7 @@ export const openImagePickerAsync = async () => {
   }
 };
 
-export const handleUpload = (pics, setImage, setLoading) => {
+export const handleUploadOne = (pics, setImage, setLoading) => {
   const data = new FormData();
   data.append('file', pics);
   data.append('upload_preset', "babuapp")

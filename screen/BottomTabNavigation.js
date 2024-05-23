@@ -7,7 +7,7 @@ import { Icon } from '@rneui/themed';
 import { Ionicons } from '@expo/vector-icons';
 // screen
 import home from "./Tab/Home"
-import follow from "./Tab/Follow"
+import favouritePost from "./Tab/FavouritePost"
 import chat from "./Tab/Chat"
 import profile from "./Tab/Profile"
 import friends from "./Tab/Friends"
@@ -17,15 +17,17 @@ function HomeStackScreen({ route }) {
   return (
     <HomeStack.Navigator>
       <HomeStack.Screen options={{ headerShown: false }} name='home' component={home} initialParams={route}></HomeStack.Screen>
+      <HomeStack.Screen options={{ headerShown: false }} name='profileOther' component={profile} initialParams={route}></HomeStack.Screen>
     </HomeStack.Navigator>
   )
 }
-const FollowStack = createNativeStackNavigator();
-function FollowStackScreen({ route }) {
+const FavouritePostStack = createNativeStackNavigator();
+function FavouritePostStackScreen({ route }) {
   return (
-    <FollowStack.Navigator>
-      <FollowStack.Screen options={{ headerShown: false }} name='follow' component={follow} initialParams={route}></FollowStack.Screen>
-    </FollowStack.Navigator>
+    <FavouritePostStack.Navigator>
+      <FavouritePostStack.Screen options={{ headerShown: false }} name='follow' component={favouritePost} initialParams={route}></FavouritePostStack.Screen>
+      <HomeStack.Screen options={{ headerShown: false }} name='profileOther' component={profile} initialParams={route}></HomeStack.Screen>
+    </FavouritePostStack.Navigator>
   )
 }
 const FriendsStack = createNativeStackNavigator();
@@ -69,9 +71,9 @@ const BottomTabNavigation = ({ route, navigation }) => {
             if (route.name === 'Home') {
               iconname = focused ? 'ios-home' : 'ios-home-outline';
             }
-            // else if (route.name === 'Follow') {
-            //   iconname = focused ? 'heart' : 'heart-outline';
-            // }
+            else if (route.name === 'Follow') {
+              iconname = focused ? 'heart' : 'heart-outline';
+            }
             // else if (route.name === 'Friends') {
             //   iconname = focused ? 'people-sharp' : 'people-outline';
             // }
@@ -93,7 +95,7 @@ const BottomTabNavigation = ({ route, navigation }) => {
         })}
       >
         <Tab.Screen name="Home" component={HomeStackScreen} />
-        {/* <Tab.Screen name="Follow" component={FollowStackScreen} /> */}
+        <Tab.Screen name="Follow" component={FavouritePostStackScreen} />
         {/* <Tab.Screen name="Friends" component={FriendsStackScreen} /> */}
         <Tab.Screen name="Chat" component={ChatStackScreen} />
         <Tab.Screen name="Profile" component={ProfileStackScreen} />

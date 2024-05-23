@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Container from '../components/layouts/Container';
 
-const Splash = ({ navigation }) => {
+const Splash = () => {
+  const navigation = useNavigation();
   useEffect(() => {
     var clearTime = setTimeout(() => {
       navigation.navigate('Login', {});
@@ -13,9 +15,9 @@ const Splash = ({ navigation }) => {
   }, []);
   return (
     <Container>
-      <View className='flex justify-center items-center h-full'>
+      <View className='flex items-center justify-center h-full'>
         <View>
-          <Text className='text-3xl font-bold text-orangecustom shadow-md mb-10'>BABU NETWORK</Text>
+          <Text className='mb-10 text-3xl font-bold shadow-md text-orangecustom'>BABU NETWORK</Text>
           <ActivityIndicator size='large' color='#FF6838'></ActivityIndicator>
         </View>
       </View>

@@ -14,12 +14,13 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import { getSender, getSenderFull, isLastMessage, isSameSender, isSameSenderMargin, isSameUser } from '../../config/ChatLogic';
 import { io } from 'socket.io-client';
+import { URL } from '../../config/enviroment';
 
-const url = process.env.REACT_APP_URL
+const url = URL
 var socket;
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
-
+var d = new Date();
 const Chat = () => {
   const { user, fetchAgain, setsetFetchAgain, chats, setChats } = DataState()
   const [showModalCreateGroup, setShowModalCreateGroup] = useState(false)
@@ -47,13 +48,14 @@ const Chat = () => {
     setShowModalCreateGroup(!showModalCreateGroup)
   }
   const handleModalSearch = () => {
+    setSearch("")
     setShowModalSearch(!showModalSearch)
   }
   const handleSearch = async () => {
     if (!search) {
       // visibleToast("not value search")
       Alert.alert('Warning', 'not value search', [
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
+        { text: 'OK' },
       ]);
       return
     }
@@ -69,6 +71,9 @@ const Chat = () => {
       setSearchResult(data);
     } catch (error) {
       setLoading(false)
+      // Alert.alert("Error", error.message, [
+      //   { text: "OK" }
+      // ])
       console.log(error.message)
       return
     }
@@ -89,6 +94,9 @@ const Chat = () => {
       setSearchResult(data);
     } catch (error) {
       setLoading(false)
+      // Alert.alert("Error", error.message, [
+      //   { text: "OK" }
+      // ])
       console.log(error.message)
       return
     }
@@ -104,7 +112,10 @@ const Chat = () => {
       const { data } = await axios.get(`${url}/api/chat`, config);
       setChats(data);
     } catch (error) {
-      console.log(error)
+      // Alert.alert("Error", error.message, [
+      //   { text: "OK" }
+      // ])
+      console.log(error.message)
     }
   }
   useEffect(() => {
@@ -124,11 +135,13 @@ const Chat = () => {
     async function getDataLogger() {
       try {
         const jsonValue = await AsyncStorage.getItem('userInfo');
-        // console.log(jsonValue)
         setLoggerUser(jsonValue != null ? JSON.parse(jsonValue) : null);
-      } catch (e) {
+      } catch (error) {
         // error reading value
-        console.log(e)
+        // Alert.alert("Error", error.message, [
+        //   { text: "OK" }
+        // ])
+        console.log(error.message)
       }
     };
   }, [fetchAgain])
@@ -147,22 +160,23 @@ const Chat = () => {
       */
       if (!chats.find((c) => c._id === data._id)) setChats([data, ...chats])
       Alert.alert('Alert', 'user already exists', [
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
+        { text: 'OK' },
       ]);
-      // console.log(chats)
       // setSelectedChat(data);
       setLoadingAccess(false);
       // onClose();
     } catch (error) {
-      console.log(error)
       setLoadingAccess(false);
+      // Alert.alert("Error", error.message, [
+      //   { text: "OK" }
+      // ])
+      console.log(error.message)
     }
   }
   const handleGroup = (userToAdd) => {
     if (selectedUser.includes(userToAdd)) {
-      console.log('chao')
       Alert.alert('Warning', 'user already exists', [
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
+        { text: 'OK' },
       ]);
     } else {
       setSelectedUser([...selectedUser, userToAdd])
@@ -229,7 +243,10 @@ const Chat = () => {
       socket.emit("join chat", selectedChat._id)
     } catch (error) {
       // visibleToast("Failed to load the messages")
-      console.log(error)
+      // Alert.alert("Error", error.message, [
+      //   { text: "OK" }
+      // ])
+      console.log(error.message)
       setLoadingMessage(false)
     }
   }
@@ -259,13 +276,15 @@ const Chat = () => {
         chatId: selectedChat._id,
         content: newMessage
       }, config)
-      console.log(data)
       socket.emit("new message", data)
       setMessages([...messages, data])
       scroll.current.scrollToEnd();
       // setFetchAgain(!fetchAgain)
     } catch (error) {
-      console.log(error.messages)
+      // Alert.alert("Error", error.message, [
+      //   { text: "OK" }
+      // ])
+      console.log(error.message)
     }
     // }
   }
@@ -306,7 +325,7 @@ const Chat = () => {
                   </View>
                   {/* {!search && <View className=' absolute top-0 -left-[2px] z-20 w-4 h-4 bg-green-500 rounded-full border-[2px] border-white'></View>} */}
                 </View>
-                <View className='flex-grow gap-y-1 mb-1'>
+                <View className='flex-grow mb-1 gap-y-1'>
                   <View className='flex flex-row items-center justify-between '>
                     <Text className='flex-grow text-lg font-medium'>
                       {loggerUser &&
@@ -314,27 +333,13 @@ const Chat = () => {
                         ? getSender(loggerUser, chat.users)
                         : chat.chatName}
                     </Text>
-                    {!search &&
-                      <Text className='text-sm font-medium text-black/50'>23 mins</Text>}
+                    {!(search.length > 0) &&
+                      <Text className='text-sm font-medium text-black/50'>{Number(chat.updatedAt.split("-")[2].slice(0, 2)) === Number(d.getDate()) ? (chat.updatedAt.split("T")[1].split(":")[0] + ':' + chat.updatedAt.split("T")[1].split(":")[1]) : chat.updatedAt.split("T")[0]}</Text>}
                   </View>
                   <Text className='font-medium text-black/50'>{chat.latestMessage?.content !== undefined ? chat.latestMessage?.content : 'send to messages'}</Text>
                 </View>
               </TouchableOpacity>
             ))}
-            {/* <ItemChat></ItemChat>
-          <ItemChat></ItemChat>
-          <ItemChat></ItemChat>
-          <ItemChat></ItemChat>
-          <ItemChat></ItemChat>
-          <ItemChat></ItemChat>
-          <ItemChat></ItemChat>
-          <ItemChat></ItemChat>
-          <ItemChat></ItemChat>
-          <ItemChat></ItemChat>
-          <ItemChat></ItemChat>
-          <ItemChat></ItemChat>
-          <ItemChat></ItemChat>
-          <ItemChat></ItemChat> */}
           </ScrollView>
           : <Text>Loading...</Text>}
       </View>
@@ -380,7 +385,7 @@ const Chat = () => {
                   placeholderTextColor='#CFCFCF'
                   placeholder='name group...'></TextInput>
               </View>
-              <Text className='mb-2 text-xs text-red-500 italic mt-1'>{errorCreateGroup.groupChatName}</Text>
+              <Text className='mt-1 mb-2 text-xs italic text-red-500'>{errorCreateGroup.groupChatName}</Text>
               {/* <Text className='mb-2 text-base font-medium text-black/70'>Group image</Text>
               <TouchableOpacity activeOpacity={0.95}>
                 <View
@@ -401,7 +406,7 @@ const Chat = () => {
                   placeholder='name group...'></TextInput>
                 <Ionicons name='search' size={24} color='#FF6838' />
               </View>
-              <Text className='mb-4 text-xs text-red-500 italic mt-1'>{errorCreateGroup.query}</Text>
+              <Text className='mt-1 mb-4 text-xs italic text-red-500'>{errorCreateGroup.query}</Text>
               <View className='flex flex-row flex-wrap -translate-x-3'>
                 {selectedUser.map(userSelector =>
                   <ItemAddGroup
@@ -414,12 +419,14 @@ const Chat = () => {
               <View>
                 {loading ?
                   <Text>Loading...</Text>
-                  : searchResult?.map(user =>
+                  : searchResult.length > 0 ? searchResult?.map(user =>
                     <ItemAddMember key={user._id}
                       user={user}
                       handleFunction={() => handleGroup(user)}
                     ></ItemAddMember>
-                  )}
+                  )
+                    : <Text className='mt-5 text-center text-black/70'>no data</Text>
+                }
 
               </View>
             </View>
@@ -475,14 +482,16 @@ const Chat = () => {
               {loadingAccess ? <Text>Loading...</Text> : null}
               {loading ?
                 <Text>Loading...</Text>
-                : searchResult?.map(user =>
+                : searchResult.length > 0 ? searchResult?.map(user =>
                   <ItemChat
                     key={user._id}
                     user={user}
                     search={true}
                     handleFunction={() => accessChat(user._id)}
                   ></ItemChat>
-                )}
+                )
+                  : <Text className='text-center text-black/70'>no data</Text>
+              }
             </View>
           </ScrollView>
         </View>
@@ -499,7 +508,7 @@ const Chat = () => {
               <TouchableOpacity
                 activeOpacity={0.7}
                 style={styles.shadowProp}
-                className='flex items-center justify-center w-8 h-8 bg-white rounded-lg mr-4'
+                className='flex items-center justify-center w-8 h-8 mr-4 bg-white rounded-lg'
                 onPress={HandleChatBoxClose}>
                 <Icon
                   name='chevron-left'
@@ -508,7 +517,7 @@ const Chat = () => {
                   size={14}
                 />
               </TouchableOpacity>
-              <View className='flex flex-row gap-3 items-center'>
+              <View className='flex flex-row items-center gap-3'>
                 <View className='w-[35px] h-[35px] rounded-full overflow-hidden'>
                   <Image className='w-full h-full' source={{
                     uri: !selectedChat.isGroupChat ?
@@ -537,7 +546,7 @@ const Chat = () => {
                   : (messages && messages.map((item, index) => (
                     <View key={item._id} className={`flex flex-row items-end ${item.sender._id === user._id ? 'self-end' : ''}`}>
                       {(isSameSender(messages, item, index, user._id) || isLastMessage(messages, index, user._id)) &&
-                        <View className='w-8 h-8 rounded-full overflow-hidden'>
+                        <View className='w-8 h-8 overflow-hidden rounded-full'>
                           <Image
                             className='w-full h-full'
                             source={{ uri: item.sender.pic }} ></Image>
@@ -559,11 +568,11 @@ const Chat = () => {
               </ScrollView>
             </View>
             <View className='absolute bottom-0 w-full bg-white p-[20px]'>
-              <View className='flex flex-row w-full items-center'>
+              <View className='flex flex-row items-center w-full'>
                 <TextInput
                   value={newMessage}
                   onChangeText={(t) => setNewMessage(t)}
-                  className='flex-grow pl-3 mr-3 py-1 rounded-lg bg-graycustom/30'
+                  className='flex-grow py-1 pl-3 mr-3 rounded-lg bg-graycustom/30'
                   placeholderTextColor='#CFCFCF'
                   placeholder='messs...'></TextInput>
                 <TouchableOpacity activeOpacity={0.7}

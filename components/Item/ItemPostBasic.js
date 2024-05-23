@@ -26,7 +26,8 @@ const data = [
   }
 ]
 
-const ItemPostBasic = ({ post }) => {
+const ItemPostBasic = (props) => {
+  const { newsFeed } = props
   const [showModalDetail, setShowModalDetail] = useState(false)
   const [buttonHeart, setButtonHeart] = useState(false)
   const [showMenuPostDetail, setShowMenuPostDetail] = useState(false)
@@ -38,12 +39,12 @@ const ItemPostBasic = ({ post }) => {
   }
   return (
     <TouchableOpacity onPress={handleShowModalDetail}
-      className='mb-2 overflow-hidden rounded-lg relative'
+      className='relative mb-2 overflow-hidden rounded-lg'
       style={{ width: windowWidth / 2 - 30, height: 150 }}>
       <Image className='w-full h-full'
-        source={{ uri: post?.media[0] }}></Image>
-      <View className='absolute bg-black/20 w-full h-full'></View>
-      <Text className='absolute bottom-1 left-1 text-white text-base font-medium'>{post.createdAt.split("T")[0]}</Text>
+        source={{ uri: newsFeed?.media }}></Image>
+      <View className='absolute w-full h-full bg-black/20'></View>
+      <Text className='absolute text-base font-medium text-white bottom-1 left-1'>{newsFeed.createdAt.split("T")[0]}</Text>
       {/* // menu posts */}
       <Modal
         animationType="slide"
@@ -64,85 +65,11 @@ const ItemPostBasic = ({ post }) => {
             />
           </TouchableOpacity>
           {/* // content modal posts detail   */}
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            showsHorizontalScrollIndicator={false}
-          >
-            <View className='relative px-[20px]'>
-              <View className='flex flex-row justify-between'>
-                <View className='flex flex-row gap-x-[10px]'>
-                  <Image
-                    className='w-10 h-10 rounded-full'
-                    source={{ uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YXZhdGFyfGVufDB8fDB8fHww' }}></Image>
-                  <View className=''>
-                    <Text className='mr-1 text-base font-medium'>Estefania</Text>
-                    <Text className="text-sm font-medium text-black/50">5 min ago</Text>
-                  </View>
-                </View>
-                <TouchableOpacity
-                // onPress={() => setShowMenuPostDetail(!showMenuPostDetail)}
-                >
-                  <View className='flex items-center justify-center rotate-90'>
-                    <Icon name='kebab-horizontal' type='octicon' color='#FF6838' size={20} />
-                  </View>
-                </TouchableOpacity>
-              </View>
-              <View className='pt-3 mb-3'>
-                <Text
-                  className='mb-4 text-sm text-black'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum molestiae nesciunt, unde repudiandae voluptate beatae laborum explicabo praesentium voluptatibus voluptas. Officiis adipisci ex cumque eligendi odit exercitationem recusandae, unde cum sed excepturi accusamus, impedit harum minima vitae, incidunt illo hic dolore? Veniam assumenda nulla quo deleniti aliquid? Id, cum neque?</Text>
-                <View
-                  style={{ height: windowHeight / 3.5 }}
-                  className='bg-red-400 rounded-[10px] overflow-hidden '>
-                  <Swiper
-                    dot={
-                      <View style={{ backgroundColor: '#DCE0DB', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 10, marginBottom: -10, }} />
-                    }
-                    activeDot={
-                      <View style={{ backgroundColor: '#FF6838', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 10, marginBottom: -10, }} />
-                    }
-                  >
-                    {data.map((item, index) => <Image
-                      className='object-cover object-center h-full'
-                      key={index} source={{ uri: item.image }} />)}
-                  </Swiper>
-                </View>
-                <View className='flex flex-row justify-between mt-3'>
-                  <View className='flex flex-row  w-[50px] justify-between gap-x-4'>
-                    <TouchableOpacity onPress={() => handleFavouritePosts()}>
-                      {buttonHeart ?
-                        <Icon name='heart-fill' type='octicon' color='#FF6464' size={20} />
-                        : <Icon name='heart' type='octicon' color='#FF6838' size={20} />
-                      }
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                      <Icon name='comment' type='octicon' color='#FF6838' size={20} />
-                    </TouchableOpacity>
-                  </View>
-                  <Icon name='share-android' type='octicon' color='#FF6838' size={20} />
-                </View>
-              </View>
-              <Comment></Comment>
-              <Comment></Comment>
-              <Comment></Comment>
-              <Comment></Comment>
-              <Comment></Comment>
-              {/* /////////////////////////////// MENU */}
-              <MenuModalPosts showMenu={showMenuPostDetail}></MenuModalPosts>
-            </View>
-            <View className='w-full h-[80px]'></View>
-          </ScrollView>
-          <View className='absolute bottom-0 w-full bg-white p-[20px]'>
-            <View className='flex flex-row w-full '>
-              <TextInput
-                className='flex-grow pl-3 mr-3 rounded-lg bg-graycustom/30'
-                placeholderTextColor='#CFCFCF'
-                placeholder='comment...'></TextInput>
-              <TouchableOpacity activeOpacity={0.7}>
-                <View className='flex items-center justify-center w-8 h-8 rounded-full bg-orangecustom'>
-                  <Icon name='plus' type='octicon' color='white' size={20} />
-                </View>
-              </TouchableOpacity>
-            </View>
+          <View className='px-[20px]'>
+            <Image
+              style={{ height: windowHeight - 100 }}
+              className='w-full'
+              source={{ uri: newsFeed?.media }}></Image>
           </View>
         </View>
       </Modal>

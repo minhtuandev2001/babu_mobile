@@ -53,6 +53,8 @@ npm install @react-navigation/bottom-tabs
 npm install react-native-pager-view
 
 npm install react-native-gesture-handler
+
+npm install react-native-linear-gradient --save
 ```
 
 ### icon
@@ -60,3 +62,27 @@ npm install react-native-gesture-handler
 ```
 "@expo/vector-icons": "^12.0.0",
 ```
+
+#### Home page
+
+![home](https://res.cloudinary.com/minhtuandev1/image/upload/v1716505250/wlxwwcfwtbgpa9tnt0pz.png)
+
+#### Search
+
+![search](https://res.cloudinary.com/minhtuandev1/image/upload/v1716505376/pyy3fzoxeq4jn14egw56.png)
+
+#### Follow page
+
+![follow](https://res.cloudinary.com/minhtuandev1/image/upload/v1716505457/ih1k9tkig3u5dg2riw3h.png)
+
+#### Profile page
+
+![profile](https://res.cloudinary.com/minhtuandev1/image/upload/v1716505508/j6llpgk0durvxipjghiu.png)
+
+#### Chat page
+
+![chat](https://res.cloudinary.com/minhtuandev1/image/upload/v1716505577/oo8gdlhyxlf0ydfwukpb.png)
+
+#### Create group chat
+
+![group](https://res.cloudinary.com/minhtuandev1/image/upload/v1716505649/x6fnlnnzb7sgcn5n1tsa.png)

@@ -8,7 +8,6 @@ const ItemChat = ({ user, search = false, handleFunction }) => {
   const HandleChatBox = () => {
     setShowChatBox(!showChatBox)
   }
-  console.log(user.pic)
   return (
     <TouchableOpacity onPress={handleFunction}>
       <View className='flex flex-row items-center gap-4 py-2'>
@@ -19,7 +18,7 @@ const ItemChat = ({ user, search = false, handleFunction }) => {
           {!search &&
             <View className=' absolute top-0 -left-[2px] z-20 w-4 h-4 bg-green-500 rounded-full border-[2px] border-white'></View>}
         </View>
-        <View className='flex-grow gap-y-1 mb-1'>
+        <View className='flex-grow mb-1 gap-y-1'>
           <View className='flex flex-row items-center justify-between '>
             <Text className='flex-grow text-lg font-medium'>{user.name}</Text>
             {!search &&
@@ -38,7 +37,7 @@ const ItemChat = ({ user, search = false, handleFunction }) => {
             <TouchableOpacity
               activeOpacity={0.7}
               style={styles.shadowProp}
-              className='flex items-center justify-center w-8 h-8 bg-white rounded-lg mr-4'
+              className='flex items-center justify-center w-8 h-8 mr-4 bg-white rounded-lg'
               onPress={HandleChatBox}>
               <Icon
                 name='chevron-left'
@@ -47,7 +46,7 @@ const ItemChat = ({ user, search = false, handleFunction }) => {
                 size={14}
               />
             </TouchableOpacity>
-            <View className='flex flex-row gap-3 items-center'>
+            <View className='flex flex-row items-center gap-3'>
               <View className='w-[35px] h-[35px] rounded-full overflow-hidden'>
                 <Image className='w-full h-full' source={{ uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YXZhdGFyfGVufDB8fDB8fHww' }}></Image>
               </View>
@@ -57,9 +56,9 @@ const ItemChat = ({ user, search = false, handleFunction }) => {
           {/* // content modal  */}
 
           <View className='absolute bottom-0 w-full bg-white p-[20px]'>
-            <View className='flex flex-row w-full items-center'>
+            <View className='flex flex-row items-center w-full'>
               <TextInput
-                className='flex-grow pl-3 mr-3 py-1 rounded-lg bg-graycustom/30'
+                className='flex-grow py-1 pl-3 mr-3 rounded-lg bg-graycustom/30'
                 placeholderTextColor='#CFCFCF'
                 placeholder='messs...'></TextInput>
               <TouchableOpacity activeOpacity={0.7}

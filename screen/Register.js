@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TextInput, Switch, TouchableOpacity, StyleSheet, ScrollView, TouchableWithoutFeedback, Keyboard, Dimensions, Animated } from 'react-native';
-import tw from 'twrnc'
+import { useNavigation } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Container from '../components/layouts/Container';
 // icon
@@ -8,17 +8,21 @@ import iconMail from '../assets/icon/mail.png'
 import userIcon from '../assets/icon/user.png'
 import lock from '../assets/icon/lock.png'
 import eyeOff from '../assets/icon/eye-off.png'
+import eyeOn from '../assets/icon/eye-on.png'
 import back from '../assets/icon/back.png'
 import google from '../assets/icon/google.png'
 import facebook from '../assets/icon/facebook.png'
 import { useState } from 'react';
 import { useRef } from 'react';
 import axios from 'axios';
+import { URL } from '../config/enviroment';
+import { Alert } from 'react-native';
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
 
-const url = process.env.REACT_APP_URL
-const Register = ({ navigation }) => {
+const url = URL
+const Register = () => {
+  const navigation = useNavigation()
   const [email, setEmail] = useState('')
   const [userName, setUserName] = useState('')
   const [password, setPassword] = useState('')
@@ -30,6 +34,7 @@ const Register = ({ navigation }) => {
     password: '',
     confirmpass: '',
   })
+  const [security, setSecurity] = useState(true)
   const handleSubmit = async () => {
     setLoading(true)
     let check = true;
@@ -93,6 +98,9 @@ const Register = ({ navigation }) => {
           navigation.navigate('BottomTabNavigation', {});
         } catch (error) {
           setLoading(false)
+          // Alert.alert("Error", error.message, [
+          //   { text: "OK" }
+          // ])
           console.log(error.message)
         }
       }
@@ -104,13 +112,13 @@ const Register = ({ navigation }) => {
   return (
     <Container>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView className=' transition-all'
+        <ScrollView className='transition-all '
           showsVerticalScrollIndicator={false}
           showsHorizontalScrollIndicator={false}>
           <View className='flex justify-between' style={{ height: windowHeight }}>
             <View className='px-[25px] flex-grow'>
               <TouchableWithoutFeedback onPress={backPageLogin}>
-                <View className='w-8 h-8 m-2 ml-0 rounded-lg flex justify-center items-center' style={styles.shadowProp}>
+                <View className='flex items-center justify-center w-8 h-8 m-2 ml-0 rounded-lg' style={styles.shadowProp}>
                   <Image
                     className='w-[6px] h-[12px]'
                     source={back}></Image>
@@ -128,7 +136,7 @@ const Register = ({ navigation }) => {
                     placeholderTextColor='#CFCFCF'
                     placeholder='enter your username'></TextInput>
                 </View>
-                <Text className='mt-1 mb-3 text-xs text-red-500 italic'>{error.userName}</Text>
+                <Text className='mt-1 mb-3 text-xs italic text-red-500'>{error.userName}</Text>
                 <View className='bg-graycustom/30 flex flex-row py-3 w-full px-[18px]  mx-auto items-center rounded-lg overflow-hidden '>
                   <Image
                     className='w-6 h-6 mr-7'
@@ -139,46 +147,58 @@ const Register = ({ navigation }) => {
                     placeholderTextColor='#CFCFCF'
                     placeholder='enter your email'></TextInput>
                 </View>
-                <Text className='mt-1 mb-3 text-xs text-red-500 italic'>{error.email}</Text>
+                <Text className='mt-1 mb-3 text-xs italic text-red-500'>{error.email}</Text>
                 <View className='bg-graycustom/30 flex flex-row py-3 w-full px-[18px]  mx-auto items-center rounded-lg overflow-hidden '>
                   <Image
                     className='w-6 h-6 mr-7'
                     source={lock}></Image>
                   <TextInput
                     onChangeText={(t) => setPassword(t)}
-                    secureTextEntry={true}
+                    secureTextEntry={security}
                     className='flex-grow'
                     placeholderTextColor='#CFCFCF'
                     placeholder='enter your password'></TextInput>
-                  <Image
-                    className='w-4 h-4'
-                    source={eyeOff}></Image>
+                  <TouchableOpacity onPress={() => setSecurity(!security)}>
+                    {security
+                      ? <Image
+                        className='w-[15px] h-[13px]'
+                        source={eyeOn}></Image>
+                      : <Image
+                        className='w-4 h-4'
+                        source={eyeOff}></Image>}
+                  </TouchableOpacity>
                 </View>
-                <Text className='mt-1 mb-3 text-xs text-red-500 italic'>{error.password}</Text>
+                <Text className='mt-1 mb-3 text-xs italic text-red-500'>{error.password}</Text>
                 <View className='bg-graycustom/30 flex flex-row py-3 w-full px-[18px]  mx-auto items-center rounded-lg overflow-hidden '>
                   <Image
                     className='w-6 h-6 mr-7'
                     source={lock}></Image>
                   <TextInput
-                    secureTextEntry={true}
+                    secureTextEntry={security}
                     onChangeText={(t) => setConsirmPass(t)}
                     className='flex-grow'
                     placeholderTextColor='#CFCFCF'
                     placeholder='enter your password'></TextInput>
-                  <Image
-                    className='w-4 h-4'
-                    source={eyeOff}></Image>
+                  <TouchableOpacity onPress={() => setSecurity(!security)}>
+                    {security
+                      ? <Image
+                        className='w-[15px] h-[13px]'
+                        source={eyeOn}></Image>
+                      : <Image
+                        className='w-4 h-4'
+                        source={eyeOff}></Image>}
+                  </TouchableOpacity>
                 </View>
-                <Text className='mt-1 mb-3 text-xs text-red-500 italic'>{error.confirmpass}</Text>
+                <Text className='mt-1 mb-3 text-xs italic text-red-500'>{error.confirmpass}</Text>
                 <TouchableOpacity disabled={loading} onPress={handleSubmit}>
                   <View className='h-[50px] bg-orangecustom rounded-lg flex items-center justify-center'>
-                    <Text className='text-center text-base text-white font-semibold'>{loading ? 'loading...' : 'Register'}</Text>
+                    <Text className='text-base font-semibold text-center text-white'>{loading ? 'loading...' : 'Register'}</Text>
                   </View>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={backPageLogin}>
-                  <View className='flex flex-row gap-x-4 mx-auto mt-4'>
-                    <Text className='text-sm text-black/50 font-semibold'>Create New Account?</Text>
-                    <Text className='text-violetcustom font-semibold'>Sign in</Text>
+                  <View className='flex flex-row items-center justify-center w-full mx-auto mt-4 gap-x-4'>
+                    <Text className='text-sm font-semibold text-black/50'>Create New Account?</Text>
+                    <Text className='font-semibold text-violetcustom'>Sign in</Text>
                   </View>
                 </TouchableOpacity>
               </View>
